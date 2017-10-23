@@ -1,4 +1,4 @@
-# chatRoom
+# Chatroom Project
 
 The Chatroom is a web application that enables people to talk online. Since the Chatroom is written in Node.js, the installation of Node.js is required for it to run.
 
