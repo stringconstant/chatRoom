@@ -1,0 +1,194 @@
+<html>
+	<head>
+		<meta name="roomName" content="{{roomName}}">
+
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+
+
+
+		<style>
+		body{
+			margin:0px;
+			background-image:url("background.jpg");
+
+		}
+
+		#topTitle{
+			margin-top:10px;
+			
+		}
+
+		#title{
+			opacity:0.9;
+			position:fixed;
+			text-align: center;
+			color:white;
+			background-color: green;
+			widows: 100%;
+			font-size: 20px;
+			margin-bottom:100px;
+			left:0;
+			right:0;
+			top:0;
+			height:40px;
+		}
+
+		#nickNameInput{
+			margin:auto;
+			margin-top:60px;
+		}
+
+		#button{
+			background-color:green;
+			border:none;
+			color:white;
+			padding:15px 45px;
+			cursor:pointer;
+		}
+
+		#messageDisplayArea div{
+			margin:auto;
+			margin-top:15px;
+			margin-bottom:15px;
+			width:550px;
+			height:40px;
+			background-color:#f2fff3;
+			border-radius:10px;
+		}
+
+		#messageDisplayArea div #body{
+			height:25px;
+			margin-bottom:0px;
+			margin-top:0px;
+			margin-left:10px;
+
+		}
+
+		#messageDisplayArea div #nkname{
+			height:10px;
+			margin-left:10px;
+			margin-bottom:10px;
+			margin-top:0px;
+			font-size:10px;
+			color:green;
+		}
+
+		#button:hover{
+			background-color:#5fa868;
+		}
+
+		#nickname_hidden{
+			background-color:#f2fff3;
+			padding:13px 160px;
+		}
+
+		#messageDisplayArea{
+			overflow:scroll;
+			opacity:0.7;
+			margin:auto;
+			margin-top:20px;
+			padding-top:5px;
+			padding-bottom:5px;
+			width:600px;
+			height:400px;
+			background-color:#efefef;
+		}
+
+		#submitBtn:hover{
+			background-color:#5fa868;
+		}
+
+		#message_field{
+			background-color:#f2fff3;
+			padding:13px 160px;
+		}
+
+		#bottomArea{
+			margin-top:30px;
+		}
+
+		#submitBtn{
+			background-color:green;
+			border:none;
+			color:white;
+			padding:15px 45px;
+			cursor:pointer;
+		}
+
+		</style>
+	</head>
+	<body>
+		<form action= "/{{roomName}}/message" method = "POST" id="message_form">
+		<div id = "title"><p id = "topTitle">Welcome to Chatroom: {{roomName}}</p></div>
+		<div id = "nickNameInput">
+			<center>
+				<input type="text" name="nickname" id="nickname_hidden" value="" placeholder="Enter Nickname"/>
+				<button id = "button" type = "button">Room List</button>
+			</center>
+		</div>
+		<div id = "messageDisplayArea">			
+		</div>
+		<div id="bottomArea"><center>
+			<input type="text" name="message" id="message_field"/>
+			<input id = "submitBtn" type="submit" value="Send" />
+			</center>
+		</div>
+		</form>
+
+		<script>
+
+		
+		function meta(name) {
+			var tag = document.querySelector('meta[name='+name+']');
+			if (tag != null)
+				return tag.content;
+			return '';
+		}
+
+		var addedMsg = {};
+
+
+		function update(){
+			console.log("Interval Function Running!");
+			$.getJSON("http://localhost:8080/{{roomName}}/messages.json",function(data){
+				$.each(data,function(key,value){
+					if (addedMsg[value.time] == undefined){
+						$("#messageDisplayArea").prepend("<div>"+"<p id = \"nkname\">"+value.nickname+"</p>"+"<p id = \"body\">"+value.body+"</p>"+"</div>");
+						addedMsg[value.time] = 1;
+					}
+						
+				});
+
+			});
+		}
+			
+		var roomName = meta('roomName');
+
+		$("#button").click(function(){
+			window.location = "http://localhost:8080/";
+		});
+
+		function sendMessage(event) {
+			var frm=$("#message_form");
+		    $.ajax({
+		        type: frm.attr('method'),
+		        url: frm.attr('action'),
+		        data: frm.serialize(),
+		        success: function (data) {
+		            alert('ok');
+		        }
+		    });
+			event.preventDefault(); 
+			$('#message_field').val("");
+			update();
+		};
+
+		$("#message_form").submit(sendMessage);
+
+		setInterval(update,1000);
+
+		</script>
+
+	</body>
+</html>

@@ -1,0 +1,114 @@
+<html>
+	<head>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+		<style>
+
+			body{
+				margin:0px;
+				background-image:url("background.jpg");
+			}
+
+			#topTitle{
+				margin-top:10px;
+			}
+
+			#title{
+				opacity:0.9;
+				position:fixed;
+				text-align: center;
+				color:white;
+				background-color: green;
+				widows: 100%;
+				font-size: 20px;
+				margin-bottom:100px;
+				left:0;
+				right:0;
+				top:0;
+				height:40px;
+			}
+
+			#roomDisplayArea{
+				overflow:scroll;
+				opacity:0.7;
+				margin:auto;
+				margin-top:80px;
+				padding-top:5px;
+				width:600px;
+				height:500px;
+				background-color:#efefef;
+			}
+
+			#roomDisplayArea div{
+				text-align:center;
+				margin:auto;
+				margin-top:10px;
+				margin-bottom:10px;
+				width:550px;
+				height:40px;
+				background-color:#f2fff3;
+				border-radius:10px;
+
+			}
+			#roomDisplayArea div a{
+				
+			}
+
+			#addNew {
+				text-align:center;
+				margin:auto;
+				margin-top:10px;
+				margin-bottom:10px;
+				width:550px;
+				height:40px;
+				background-color:#f2fff3;
+				border-radius:10px;
+			}
+
+
+		</style>
+		<title>Welcome to the Chatroom</title>
+	</head>
+	<body>
+		<div id = "title"><p id = "topTitle">Welcome to the Chatroom</div>
+		<div id = "roomDisplayArea">
+		</div>
+		<div id = "addNew">
+		</div>
+
+
+
+		<script>
+
+			function generateRoomIdentifier() {
+				// make a list of legal characters
+				// we're intentionally excluding 0, O, I, and 1 for readability
+				var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+				var result = '';
+				for (var i = 0; i < 6; i++)
+				result += chars.charAt(Math.floor(Math.random() * chars.length));
+				return result;
+			}
+			var added = {}
+			function update(){
+				console.log("Hello");
+				$.getJSON("http://localhost:8080/rooms.json",function(data){
+					$.each(data,function(key,value){
+						console.log(value.room);
+						if (added[value.room] == undefined){
+							$('#roomDisplayArea').prepend("<div>"+"<a href = \"http://localhost:8080/"+value.room+"\""+">"+value.room+"</a>"+"</div>");
+							added[value.room] = 1;
+						}		
+					});
+				});
+			}
+
+
+
+			$('#addNew').prepend("<a href = \"http://localhost:8080/"+generateRoomIdentifier()+"\">Add a new chatroom"+"</a>");
+
+			setInterval(update,1000);
+		</script>
+
+	</body>
+
+</html>
