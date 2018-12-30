@@ -6,26 +6,13 @@ var engines = require('consolidate');
 app.engine('html', engines.hogan); 
 app.set('views', __dirname + '/templates');
 app.use(express.static(__dirname + '/public'));
-//app.use(express.bodyParser()); // middleware used for POST request handling; see below
-// your app's code here
 
 var bodyParser = require('body-parser');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
-function generateRoomIdentifier() {
-	// make a list of legal characters
-	// we're intentionally excluding 0, O, I, and 1 for readability
-	var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-	var result = '';
-	for (var i = 0; i < 6; i++)
-	result += chars.charAt(Math.floor(Math.random() * chars.length));
-	return result;
-}
-
 function insertBlockToMessagesEntity(room,nickname,body){
-	var d = new Date(); // for now
-	// currentTime = (d.getHours()+":"+d.getMinutes());
+	var d = new Date(); // Date
 	conn.query("INSERT INTO messages VALUES($1,$2,$3,$4);",[room,nickname,body,d]);
 }
 
@@ -34,7 +21,7 @@ function insertItemToRoomEntity(room){
 }
 
 function selectMessageFromCertainRoomAndMessage(room,response){
-	var l = [];
+	var l = []; // Message List
 	conn.query("SELECT * FROM messages WHERE room = $1;",[room]).on('data',function(row){
 		l.push(row);
 	}).on('end', function() {
@@ -58,10 +45,9 @@ app.get('/:roomName/messages.json', function(request,response){
 
 app.post('/:roomName/message', function(request,response){
 	var name = request.params.roomName; // something like: 'ABC123' 
-	var nickname = request.body.nickname; // something like: 'Trump'
-	var message = request.body.message;
+	var nickname = request.body.nickname; // something like: 'William'
+	var message = request.body.message; // something like: 'That chat room is awesome'
 	insertBlockToMessagesEntity(name,nickname,message);
-	//response.render('index.html',{roomMessagesDisplay:message});
 });
 
 app.get('/:roomName',function(request,response){
@@ -72,11 +58,5 @@ app.get('/:roomName',function(request,response){
 app.get('/',function(request,response){
 	response.render('home.html');
 });
-
-
-
-
-
-
 
 app.listen(8080);
